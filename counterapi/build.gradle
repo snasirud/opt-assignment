@@ -36,7 +36,7 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
-
+	testImplementation group: 'junit', name: 'junit'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.projectlombok:lombok:1.18.12'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'

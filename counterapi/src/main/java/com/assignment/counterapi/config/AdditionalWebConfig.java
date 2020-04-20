@@ -12,9 +12,7 @@ import org.springframework.web.filter.CorsFilter;
 public class AdditionalWebConfig {
     /**
      * Allowing all origins, headers and methods here is only intended to keep this example simple.
-     * This is not a default recommended configuration. Make adjustments as
-     * necessary to your use case.
-     *
+     * This is not a default recommended configuration
      */
     @Bean
     public FilterRegistrationBean corsFilter() {

@@ -37,6 +37,8 @@ public class CounterApiController  {
             return new ResponseEntity<Object>(searchResult, HttpStatus.OK);
         } catch (CounterApiException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Custom Internal Server Error", ex);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Internal Server Error", ex);
         }
     }
 
@@ -48,6 +50,8 @@ public class CounterApiController  {
             return new ResponseEntity<Object>(topListingResult, HttpStatus.OK);
         } catch (CounterApiException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Custom Internal Server Error", ex);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Internal Server Error", ex);
         }
     }
 

@@ -3,6 +3,7 @@ package com.assignment.counterapi.service.impl;
 import com.assignment.counterapi.domain.Paragraph;
 import com.assignment.counterapi.repository.ParagraphRepository;
 import com.assignment.counterapi.service.ParagraphService;
+import com.assignment.counterapi.exception.CounterApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.json.JSONObject;
@@ -27,7 +28,7 @@ public class ParagraphServiceImpl implements ParagraphService {
     private HashMap<String, Integer> WordMap;
 
     @Autowired
-    public ParagraphServiceImpl(ParagraphRepository paraRepository) {
+    public ParagraphServiceImpl(ParagraphRepository paraRepository) throws CounterApiException{
 
         this.paraRepository = paraRepository;
         Paragraphs = (List<Paragraph>)paraRepository.findAll();
@@ -37,7 +38,7 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public String search(List<String> searchList) {
+    public String search(List<String> searchList) throws CounterApiException{
 
         Map returnWordMap = new HashMap(WordMap);
 
@@ -53,16 +54,39 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
-    public String top(Integer count) {
+    public String top(Integer count) throws CounterApiException {
 
-        Map<String, Integer> returnWordMap = new LinkedHashMap<>();;
+        try {
+            Map<String, Integer> returnWordMap = new LinkedHashMap<>();
 
-        WordMap.entrySet()
-                .stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(count)
-                .forEachOrdered(x -> returnWordMap.put(x.getKey(), x.getValue()));
+            WordMap.entrySet()
+                    .stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .limit(count)
+                    .forEachOrdered(x -> returnWordMap.put(x.getKey(), x.getValue()));
 
-        return formatTopSearchResult(returnWordMap);
+            return formatTopSearchResult(returnWordMap);
+        } catch (Exception ex) {
+            throw new CounterApiException(ex.getMessage());
+        }
+    }
+
+    private String formatSearchResult(Map<String, Integer> searchResultWordMap) throws CounterApiException {
+
+        try {
+            JSONArray ja = new JSONArray();
+
+            searchResultWordMap.entrySet()
+                    .stream()
+                    .forEachOrdered(x -> ja.put((new JSONObject()).put(x.getKey(), x.getValue())));
+
+
+            JSONObject mainObj = new JSONObject();
+            mainObj.put("counts", ja);
+
+            return mainObj.toString();
+        } catch (Exception ex) {
+            throw new CounterApiException(ex.getMessage());
+        }
     }
 
     private void  countRepeatedWords(String wordToFind) {
@@ -74,22 +98,6 @@ public class ParagraphServiceImpl implements ParagraphService {
         }
 
         System.out.println(WordMap);
-    }
-
-
-    private String formatSearchResult(Map<String, Integer> searchResultWordMap) {
-
-        JSONArray ja = new JSONArray();
-
-        searchResultWordMap.entrySet()
-                           .stream()
-                           .forEachOrdered(x -> ja.put((new JSONObject()).put(x.getKey(), x.getValue())));
-
-
-        JSONObject mainObj = new JSONObject();
-        mainObj.put("counts", ja);
-
-        return mainObj.toString();
     }
 
     private String formatTopSearchResult(Map<String, Integer> searchResultWordMap) {
